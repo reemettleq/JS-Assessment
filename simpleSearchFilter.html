@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quotes Search Filter</title>
+</head>
+<style>
+    body {
+      padding: 20px;
+    }
+    input {
+      width: 30%;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: #161616;
+      color: white;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 3px;
+    }
+    #errorMessage {
+      color: red;
+      font-weight: bold;
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+  </style>
+<body>
+  <h1>Find a Quote</h1>
+  <input type="text" id="quoteSearch" placeholder="Search for quote here.."/>
+  <ul id="results"></ul>
+  <p id="errorMessage"></p>
+
+  <script>
+    
+    let allQuotes = [];
+
+    fetch('https://dummyjson.com/quotes')
+      .then(response => response.json())
+      .then(result => {
+        allQuotes = result.quotes;
+        updateQuotes(allQuotes);
+      })
+      .catch(err => {
+        document.getElementById('errorMessage').textContent = "Couldn't load quotes.";
+      });
+
+    function updateQuotes(quotes) {
+      const resultsList = document.getElementById('results');
+      resultsList.innerHTML = '';
+      if(quotes.length === 0){
+        resultsList.innerHTML = '<li>No Results Found :(</li>';
+        return;
+      }
+      quotes.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item.quote;
+        resultsList.appendChild(li);
+      });
+    }
+
+    document.getElementById('quoteSearch').addEventListener('input', function () {
+      const inputValue = this.value.toLowerCase();
+      const filteredQuotes = allQuotes.filter(
+        item => item.quote.toLowerCase().includes(inputValue));
+      updateQuotes(filteredQuotes);
+    });
+  </script>
+</body>
+</html>
